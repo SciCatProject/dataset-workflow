@@ -2,7 +2,7 @@
 
 ## Setup Guide
 
-### OpenWhisk
+### 1. OpenWhisk
 
 * Clone the [Openwhisk repository](https://github.com/apache/incubator-openwhisk-devtools) and start the Docker containers
   ```
@@ -15,8 +15,8 @@
   ```
   $ cp .wskprops $HOME/
   ```
-  
-### OpenWhisk CLI
+
+### 2. OpenWhisk CLI
 
 To interact with OpenWhisk you need to use the OpenWhisk CLI tool `wsk`, here there are two choices
   
@@ -32,11 +32,11 @@ or, if you're on Mac, you can install it using HomeBrew so that it is added to y
   
 ---
   
-*Note that you have to use the -i or --insecure flag with* wsk *, since the docker-compose OpenWhisk uses Self-Signed Certificates*
-  
+*Note that you have to use the -i or --insecure flag with* wsk *, since the docker-compose OpenWhisk uses Self-Signed   Certificates*
+    
 ---
 
-### Kafka Package
+### 3. Kafka Package
 
 You can use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
 ```
@@ -91,7 +91,7 @@ package /[NAMESPACE]/messaging: Returns a result based on parameter endpoint
    (parameters: brokers, endpoint, isBinaryKey, isBinaryValue, isJSONData, topic)
 ```
 
-### Creating a trigger
+### 4. Creating a trigger
 
 To create a trigger that listens to a Kafka instance, run the following (assuming one Kafka broker running locally):
 ```
