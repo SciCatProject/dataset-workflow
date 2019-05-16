@@ -6,14 +6,14 @@
 
 * Clone the [Openwhisk repository](https://github.com/apache/incubator-openwhisk-devtools) and start the Docker containers
   ```
-  git clone https://github.com/apache/incubator-openwhisk-devtools.git
-  cd incubator-openwhisk-devtools/docker-compose
-  make quick-start
+  $ git clone https://github.com/apache/incubator-openwhisk-devtools.git
+  $ cd incubator-openwhisk-devtools/docker-compose
+  $ make quick-start
   ```
 
 * Copy the file *.wskprops*, located inside the current directory, to your home directory
   ```
-  cp .wskprops $HOME/
+  $ cp .wskprops $HOME/
   ```
   
 ### OpenWhisk CLI
@@ -22,13 +22,13 @@ To interact with OpenWhisk you need to use the OpenWhisk CLI tool `wsk`, here th
   
 * Use the one located in incubator-openwhisk-devtools/docker-compose/openwhisk-src/bin, e.g.,
   ```
-  cd openwhisk-src
-  bin/wsk [command]
+  $ cd openwhisk-src
+  $ bin/wsk [command]
   ```
   
 or, if you're on Mac, you can install it using HomeBrew so that it is added to your PATH
   
-* `brew install wsk`
+* `$ brew install wsk`
   
 ---
   
@@ -40,13 +40,13 @@ or, if you're on Mac, you can install it using HomeBrew so that it is added to y
 
 * You can use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
   ```
-  make create-provider-kafka
+  $ make create-provider-kafka
   ```
   
 This will, however, not run the necessary `installKafka.sh` script, you will have to do that manually afterwards. If you are inside the docker-compose directory:
 ```
-cd openwhisk-package-kafka
-./installKafka.sh <authKey> <edgehost> <dburl> <dbprefix> <apihost>
+$ cd openwhisk-package-kafka
+$ ./installKafka.sh <authKey> <edgehost> <dburl> <dbprefix> <apihost>
 ```
   
 * autKey
@@ -76,7 +76,7 @@ cd openwhisk-package-kafka
   
 To confirm that kafkaFeed has been installed, run:
 ```
-wsk -i package get --summary /[NAMESPACE]/messaging
+$ wsk -i package get --summary /[NAMESPACE]/messaging
 ```
 
 (where NAMESPACE is either *guest* or *whisk.system*, depending on which auth key you chose when running *installKafka.sh*)
