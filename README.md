@@ -38,10 +38,10 @@ or, if you're on Mac, you can install it using HomeBrew so that it is added to y
 
 ### Kafka Package
 
-* You can use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
-  ```
-  $ make create-provider-kafka
-  ```
+You can use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
+```
+$ make create-provider-kafka
+```
   
 This will, however, not run the necessary `installKafka.sh` script, you will have to do that manually afterwards. If you are inside the docker-compose directory:
 ```
