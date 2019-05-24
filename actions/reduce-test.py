@@ -5,12 +5,9 @@ from requests.exceptions import Timeout
 
 
 def main(_dict):
-    host = "10.2.27.100"
-    port = "3000"
-    login = {
-        "username": _dict['username'],
-        "password": _dict['password']
-    }
+    host = _dict['api']['host']
+    port = _dict['api']['port']
+    login = _dict['login']
 
     if 'dataset' in _dict:
         dataset_name = _dict['dataset']['datasetName']
