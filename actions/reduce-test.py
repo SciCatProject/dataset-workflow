@@ -5,20 +5,39 @@ from requests.exceptions import Timeout
 
 
 def main(_dict):
+    host = "10.2.27.100"
+    port = "3000"
+    login = {
+        "username": _dict['username'],
+        "password": _dict['password']
+    }
+
     if 'dataset' in _dict:
         dataset_name = _dict['dataset']['datasetName']
         derived_dataset = new_derived_dataset()
+
         try:
-            response = requests.post(
-                'http://10.2.27.100:3000/api/v3/DerivedDatasets?access_token=mEBVwdtvugPPnpFEx1OY2Z8krYmpkiq5dxuXs6dsOGq7P3nXRt52bsH3HnoMzwRl',
-                json=derived_dataset,
-                timeout=(5, 10))
+            login_response = requests.post(
+                'http://' + host + ':' + port + '/api/v3/Users/Login',
+                json=login,
+                timeout=(5, 10)
+            )
         except Timeout:
-            output = "Error: The request timed out"
+            output = "Error: Login request timed out"
             return {"datasetName": dataset_name, "output": output}
         else:
-            output = "Success: New Derived Dataset created."
-            return {"datasetName": dataset_name, "derived_dataset": response.json(), "output": output}
+            access_token = login_response.json()['id']
+            try:
+                response = requests.post(
+                    'http://' + host + ':' + port + '/api/v3/DerivedDatasets?access_token=' + access_token,
+                    json=derived_dataset,
+                    timeout=(5, 10))
+            except Timeout:
+                output = "Error: The request timed out"
+                return {"datasetName": dataset_name, "output": output}
+            else:
+                output = "Success: New Derived Dataset created."
+                return {"datasetName": dataset_name, "derived_dataset": response.json(), "output": output}
 
     else:
         dataset_name = "Unknown"
