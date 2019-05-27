@@ -92,4 +92,4 @@ modules.xml
 # End of https://www.gitignore.io/api/pycharm+all
 
 # Misc
-config.json
+config.local.json

@@ -5,13 +5,11 @@ from requests.exceptions import Timeout
 
 
 def main(_dict):
-    host = _dict['api']['host']
-    port = _dict['api']['port']
+    host, port = _dict['api'].values()
     login = _dict['login']
 
     if 'dataset' in _dict:
         dataset_name = _dict['dataset']['datasetName']
-        derived_dataset = new_derived_dataset()
 
         try:
             login_response = requests.post(
@@ -25,6 +23,7 @@ def main(_dict):
         else:
             access_token = login_response.json()['id']
             try:
+                derived_dataset = new_derived_dataset()
                 response = requests.post(
                     'http://' + host + ':' + port + '/api/v3/DerivedDatasets?access_token=' + access_token,
                     json=derived_dataset,

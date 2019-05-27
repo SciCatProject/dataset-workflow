@@ -1,0 +1,10 @@
+{
+  "api": {
+    "host": "Your IP address, NOT LOCALHOST",
+    "port": "Catamel api port"
+  },
+  "login": {
+    "username": "SciCat username",
+    "password": "ScicCat password"
+  }
+}
