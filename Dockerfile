@@ -31,11 +31,13 @@ RUN sudo apt-get update \
                  python-pip \
  && sudo apt-get autoclean
 
-# Install common modules for python
+# Upgrade common modules for python
 RUN pip install --no-cache-dir --upgrade pip setuptools six cryptography pyOpenSSL
 
+# Remove the pip installed via apt-get to avoid conflicts with the upgraded version of pip
 RUN sudo apt-get remove python-pip -y
 
+# Install common modules for python
 RUN pip install --no-cache-dir \
         gevent==1.3.6 \
         flask==1.0.2 \
