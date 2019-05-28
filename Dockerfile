@@ -21,7 +21,6 @@ FROM mantidproject/mantid:latest_ubuntu16.04
 # Upgrade and install basic Python dependencies
 RUN sudo apt-get update \
  && sudo apt-get upgrade -y \
- && sudo apt-get autoclean \
  && sudo apt-get install -y \
                  libbz2-dev \
                  libxslt1-dev \
@@ -29,7 +28,8 @@ RUN sudo apt-get update \
                  libffi-dev \
                  linux-headers-generic \
                  libcurl4-openssl-dev \
-                 python-pip
+                 python-pip \
+ && sudo apt-get autoclean
 
 # Install common modules for python
 RUN pip install --no-cache-dir --upgrade pip setuptools six cryptography pyOpenSSL
