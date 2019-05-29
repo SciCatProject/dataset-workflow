@@ -98,6 +98,13 @@ To create a trigger that listens to a Kafka instance, run the following (assumin
 $ wsk -i trigger create MyKafkaTrigger -f /[NAMESPACE]/messaging/kafkaFeed -p brokers "[\"[YOUR IP FROM ABOVE]:9092\"]" -p topic mytopic -p isJSONData true
 ```
 
+### 5. Creating an action
+
+The example below shows how to create an action that uses the custom python2-mantid runtime:
+```
+$ wsk -i action create reduce-dataset ./actions/reduce-dataset.py -P config.local.json --docker dacat/openwhisk-python2action-mantid:latest
+```
+
 ## References
 
 [OpenWhisk Documentation](https://openwhisk.apache.org/documentation.html#documentation)
