@@ -10,8 +10,8 @@ class SANS2DLimitEventsTime:
 
     def runTest(self):
         SANS2D()
-        MaskFile('MaskSANS2DReductionGUI_LimitEventsTime.txt')
-        AssignSample('22048')
+        MaskFile('/data/MaskSANS2DReductionGUI_LimitEventsTime.txt')
+        AssignSample('/data/SANS2D00022048.nxs')
         WavRangeReduction()
 
     def validate(self):

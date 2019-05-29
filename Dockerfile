@@ -63,4 +63,7 @@ RUN mkdir -p /action
 # Add Mantid to PYTHONPATH
 Run /opt/Mantid/etc/mantid.sh
 
+# Add data files required for running mantid-reduce action
+COPY ./data /data
+
 CMD ["/bin/bash", "-c", "cd pythonAction && python -u pythonrunner.py"]
