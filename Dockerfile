@@ -60,4 +60,7 @@ ADD https://raw.githubusercontent.com/apache/incubator-openwhisk-runtime-docker/
 ADD https://raw.githubusercontent.com/apache/incubator-openwhisk-runtime-python/master/core/pythonAction/pythonrunner.py /pythonAction/
 RUN mkdir -p /action
 
+# Add Mantid to PYTHONPATH
+Run /opt/Mantid/etc/mantid.sh
+
 CMD ["/bin/bash", "-c", "cd pythonAction && python -u pythonrunner.py"]
