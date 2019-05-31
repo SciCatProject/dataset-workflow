@@ -29,7 +29,8 @@ class Catamel:
             post_response = requests.post(
                 'http://' + self.host + ':' + self.port + '/api/v3/DerivedDatasets?access_token=' + access_token,
                 json=derived_dataset,
-                timeout=(5, 10))
+                timeout=(5, 10)
+            )
         except Timeout:
             return "Error: Post request timed out."
         else:
