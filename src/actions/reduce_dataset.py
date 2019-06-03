@@ -125,5 +125,5 @@ def main(input_data):
 
     else:
         dataset_name = "Unknown"
-        message = "Error: Input did not reach Action 'reduce-test'."
+        message = "Error: Input did not reach Action 'reduce-dataset'."
         return {"datasetName": dataset_name, "message": message}
