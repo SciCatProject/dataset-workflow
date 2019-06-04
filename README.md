@@ -77,12 +77,16 @@ $ wsk -i package get --summary /whisk.system/messaging
 
 You should get the following output:
 ```
-package /whisk.system/messaging: Returns a result based on parameter endpoint
-   (parameters: *endpoint)
+package /whisk.system/messaging: Returns a result based on parameters endpoint, isBinaryKey, isBinaryValue, isJSONData, kafka_admin_url, kafka_brokers_sasl, password, topic and user
+   (parameters: *endpoint, isBinaryKey, isBinaryValue, isJSONData, kafka_admin_url, kafka_brokers_sasl, password, topic, user)
  action /whisk.system/messaging/kafkaProduce: Deprecated - Produce a message to a Kafka cluster
    (parameters: base64DecodeKey, base64DecodeValue, brokers, key, topic, value)
+ action /whisk.system/messaging/messageHubProduce: Deprecated - Produce a message to Message Hub
+   (parameters: base64DecodeKey, base64DecodeValue, kafka_brokers_sasl, key, password, topic, user, value)
  feed   /whisk.system/messaging/kafkaFeed: Feed to listen to Kafka messages
    (parameters: brokers, endpoint, isBinaryKey, isBinaryValue, isJSONData, topic)
+ feed   /whisk.system/messaging/messageHubFeed: Feed to list to Message Hub messages
+   (parameters: endpoint, isBinaryKey, isBinaryValue, isJSONData, kafka_admin_url, kafka_brokers_sasl, password, topic, user)
 ```
 
 ### 4. Creating a trigger
