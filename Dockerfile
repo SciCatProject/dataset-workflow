@@ -61,7 +61,7 @@ ADD https://raw.githubusercontent.com/apache/incubator-openwhisk-runtime-python/
 RUN mkdir -p /action
 
 # Add Mantid to PYTHONPATH
-Run /opt/Mantid/etc/mantid.sh
+RUN /opt/Mantid/etc/mantid.sh
 
 # Add data files required for running mantid-reduce action
 COPY ./data /data
