@@ -12,7 +12,7 @@
   ```
   
   ---
-  *To increase the maximum memory (default 512 mB) of the OpenWhisk runtimes, open the file* docker-whisk-controller.env *inside the* docker-compose *directory, add the following environment variable and then restart the containers*
+  *To increase the maximum memory limit (default 512 mB) of the OpenWhisk runtimes, open the file* docker-whisk-controller.env *inside the* docker-compose *directory, add the following environment variable and then restart the containers*
   
   ```
   CONFIG_whisk_memory_max=[value in mB, e.g., 2048]m
