@@ -46,7 +46,12 @@ or, if you're on Mac, you can install it using HomeBrew so that it is added to y
 
 ### 3. Kafka Package
 
-You can use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
+First, you need to set the `OPENWHISK_HOME` environment variable to the *openwhisk-src* directory, i.e.:
+```
+$ export OPENWHISK_HOME=/path/to/incubator-openwhisk-devtools/docker-compose/openwhisk-src
+```
+ 
+You can then use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
 ```
 $ make create-provider-kafka
 ```
@@ -57,12 +62,12 @@ $ cd openwhisk-package-kafka
 $ ./installKafka.sh <authKey> <edgehost> <dburl> <dbprefix> <apihost>
 ```
   
-* autKey
+* authKey
   
-  * To install the package under the *guest* namespace, use the key located in your *.wskprops* AUTH variable
-  * To install the package under the *wisk.system* namespace, use the key located in 
-  
-    `incubator-openwhisk-devtools/docker-compose/openwhisk-src/ansible/files/auth.whisk.system`
+  This should be the authKey for the *guest* namespace, which you can get by typing:
+  ```
+  $ wsk -i property get --auth
+  ```
 
 * edgehost
 
@@ -72,11 +77,11 @@ $ ./installKafka.sh <authKey> <edgehost> <dburl> <dbprefix> <apihost>
 
   The dburl should be of the following format:
   
-  `https://whisk_admin:some_passw0rd@<YOUR IP FROM ABOVE>:5984`
+  `http://whisk_admin:some_passw0rd@<YOUR IP FROM ABOVE>:5984`
   
 * dbprefix
 
-  This should be set to `ow_kafka_triggers`
+  This should be set to `local_`
   
 * apihost
 
