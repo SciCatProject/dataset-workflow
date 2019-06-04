@@ -46,9 +46,17 @@ or, if you're on Mac, you can install it using HomeBrew so that it is added to y
 
 ### 3. Kafka Package
 
-First, you need to set the `OPENWHISK_HOME` environment variable to the *openwhisk-src* directory, i.e.:
+First, you need to set the `OPENWHISK_HOME` environment variable to the *openwhisk-src* directory. If you are inside the *docker-compose* directory, run:
 ```
-$ export OPENWHISK_HOME=/path/to/incubator-openwhisk-devtools/docker-compose/openwhisk-src
+$ export OPENWHISK_HOME=$PWD/openwhisk-src
+```
+
+then, set the following environment variables:
+```
+$ export AUTH_KEY=`cat $OPENWHISK_HOME/ansible/files/auth.whisk.system`
+$ export API_HOST=`wsk -i property get --apihost | awk '{print $NF}' | sed -e 's/https:\/\///'`
+$ export DB_URL=http://whisk_admin:some_passw0rd@${API_HOST}:5984
+$ export DB_PREFIX=local_
 ```
  
 You can then use the `Makefile` inside the docker-compose directory to set up the OpenWhisk kafkaprovider docker container
@@ -59,48 +67,21 @@ $ make create-provider-kafka
 This will, however, not run the necessary `installKafka.sh` script, you will have to do that manually afterwards. If you are inside the docker-compose directory:
 ```
 $ cd openwhisk-package-kafka
-$ ./installKafka.sh <authKey> <edgehost> <dburl> <dbprefix> <apihost>
+$ ./installKafka.sh $AUTH_KEY $API_HOST $DB_URL $DB_PREFIX $API_HOST
 ```
-  
-* authKey
-  
-  This should be the authKey for the *guest* namespace, which you can get by typing:
-  ```
-  $ wsk -i property get --auth
-  ```
-
-* edgehost
-
-  This the IP address located in your *.wskprops* APIHOST variable **without** the 'https://' prefix
-  
-* dburl
-
-  The dburl should be of the following format:
-  
-  `http://whisk_admin:some_passw0rd@<YOUR IP FROM ABOVE>:5984`
-  
-* dbprefix
-
-  This should be set to `local_`
-  
-* apihost
-
-  The apihost variable should be the same as the edgehost variable
   
 To confirm that kafkaFeed has been installed, run:
 ```
-$ wsk -i package get --summary /[NAMESPACE]/messaging
+$ wsk -i package get --summary /whisk.system/messaging
 ```
-
-(where NAMESPACE is either *guest* or *whisk.system*, depending on which auth key you chose when running *installKafka.sh*)
 
 You should get the following output:
 ```
-package /[NAMESPACE]/messaging: Returns a result based on parameter endpoint
+package /whisk.system/messaging: Returns a result based on parameter endpoint
    (parameters: *endpoint)
- action /[NAMESPACE]/messaging/kafkaProduce: Deprecated - Produce a message to a Kafka cluster
+ action /whisk.system/messaging/kafkaProduce: Deprecated - Produce a message to a Kafka cluster
    (parameters: base64DecodeKey, base64DecodeValue, brokers, key, topic, value)
- feed   /[NAMESPACE]/messaging/kafkaFeed: Feed to listen to Kafka messages
+ feed   /whisk.system/messaging/kafkaFeed: Feed to listen to Kafka messages
    (parameters: brokers, endpoint, isBinaryKey, isBinaryValue, isJSONData, topic)
 ```
 
@@ -108,14 +89,33 @@ package /[NAMESPACE]/messaging: Returns a result based on parameter endpoint
 
 To create a trigger that listens to a Kafka instance, run the following (assuming one Kafka broker running locally):
 ```
-$ wsk -i trigger create MyKafkaTrigger -f /[NAMESPACE]/messaging/kafkaFeed -p brokers "[\"[YOUR IP FROM ABOVE]:9092\"]" -p topic mytopic -p isJSONData true
+$ wsk -i trigger create MyKafkaTrigger -f /whisk.system/messaging/kafkaFeed -p brokers $API_HOST:9093 -p topic mytopic -p isJSONData true
+```
+
+This should give you an output in JSON format, followed by:
+```
+ok: created trigger MyKafkaTrigger
 ```
 
 ### 5. Creating an action
 
 The example below shows how to create an action that uses the custom python2-mantid runtime:
 ```
-$ wsk -i action create reduce-dataset ./actions/reduce-dataset.py -P config.local.json --docker dacat/openwhisk-python2action-mantid:latest
+$ wsk -i action create reduce-dataset ./actions/reduce_dataset.py -P config.local.json --docker dacat/openwhisk-python2action-mantid:latest
+```
+
+You can create the *config.local.json* file from the *config.local.sample.json* file located in this repository
+
+### 6. Checking logs
+
+You can get a live feed of the logs for different activations by running:
+```
+wsk -i activation poll
+```
+
+To check the logs for a specific activation, run:
+```
+wsk -i activation logs <activationId>
 ```
 
 ## References
