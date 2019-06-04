@@ -10,6 +10,14 @@
   $ cd incubator-openwhisk-devtools/docker-compose
   $ make quick-start
   ```
+  
+  ---
+  *To increase the maximum memory (default 512 mB) of the OpenWhisk runtimes, open the file* docker-whisk-controller.env *inside the* docker-compose *directory, add the following environment variable and then restart the containers*
+  
+  ```
+  CONFIG_whisk_memory_max=[value in mB, e.g., 2048]m
+  ```
+  ---
 
 * Copy the file *.wskprops*, located inside the current directory, to your home directory
   ```
