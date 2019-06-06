@@ -10,30 +10,29 @@ from ISISCommandInterface import *
 
 
 def main(input_data):
+    catamel = Catamel(input_data)
+    sans2d = SANS2DLimitEventsTime(input_data)
+    utils = Utils()
+
     if 'datasetPid' in input_data:
-        catamel = Catamel(input_data)
-        sans2d = SANS2DLimitEventsTime(input_data)
-        utils = Utils()
-
-        # dataset_name = input_data['dataset']['datasetName']
         dataset_pid = input_data['datasetPid']
-        access_token = catamel.login()
-
-        if len(access_token) == 64:
-            input_dataset = catamel.fetch_dataset_from_pid(access_token, dataset_pid)
-            reduce_data = sans2d.run()
-            derived_dataset = utils.new_derived_dataset(input_dataset, reduce_data)
-            post_response = catamel.post_derived_dataset(access_token, derived_dataset)
-            message = "Success: Dataset reduction complete."
-            # return {"input_dataset": input_dataset, "reduce_data": reduce_data}
-            return {"derivedDataset": post_response, "message": message}
-        else:
-            return {"message": access_token}
-
+    elif 'messages' in input_data and 'datasetPid' in input_data['messages'][0]['value']:
+        dataset_pid = input_data['messages'][0]['value']['datasetPid']
     else:
-        dataset_name = "Unknown"
-        message = "Error: Input did not reach Action 'reduce-dataset'."
-        return {"datasetName": dataset_name, "message": message}
+        message = "Error: Input did not reach Action 'mantid-reduce-dataset'."
+        return {"inputDataset": input_data, "derivedDataset": "N/A", "message": message}
+
+    access_token = catamel.login()
+
+    if len(access_token) == 64:
+        input_dataset = catamel.fetch_dataset_from_pid(access_token, dataset_pid)
+        reduce_data = sans2d.run()
+        derived_dataset = utils.new_derived_dataset(input_dataset, reduce_data)
+        post_response = catamel.post_derived_dataset(access_token, derived_dataset)
+        message = "Success: Dataset reduction complete."
+        return {"inputDataset": dataset_pid, "derivedDataset": post_response, "message": message}
+    else:
+        return {"inputDataset": dataset_pid, "derivedDataset": "N/A", "message": access_token}
 
 
 class SANS2DLimitEventsTime(object):
@@ -94,8 +93,8 @@ class Catamel:
 
 class Utils:
 
-    def random_pid(self, letters=string.ascii_uppercase, digits=string.digits):
-        return ''.join(random.choice(letters) for _ in range(3)) + ''.join(random.choice(digits) for _ in range(3))
+    def random_string(self, characters=string.ascii_uppercase + string.digits):
+        return ''.join(random.choice(characters) for _ in range(6))
 
     def new_derived_dataset(self, input_dataset, reduce_data):
         timestamp = datetime.datetime.now().isoformat()
@@ -125,7 +124,7 @@ class Utils:
                 "string"
             ],
             "description": "Reduction of " + input_dataset['datasetName'],
-            "datasetName": "Reduction no. " + self.random_pid(),
+            "datasetName": "Reduction no. " + self.random_string(),
             "classification": "string",
             "license": input_dataset['license'],
             "version": "string",
