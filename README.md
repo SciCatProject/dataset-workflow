@@ -93,7 +93,7 @@ package /whisk.system/messaging: Returns a result based on parameters endpoint, 
 
 To create a trigger that listens to a Kafka instance, run the following (assuming one Kafka broker running locally):
 ```
-$ wsk -i trigger create MyKafkaTrigger -f /whisk.system/messaging/kafkaFeed -p brokers $API_HOST:9093 -p topic mytopic -p isJSONData true
+$ wsk -i trigger create MyKafkaTrigger -f /whisk.system/messaging/kafkaFeed -p brokers $API_HOST:9093 -p topic test -p isJSONData true
 ```
 
 This should give you an output in JSON format, followed by:
