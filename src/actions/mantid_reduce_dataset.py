@@ -1,16 +1,20 @@
 from __future__ import (absolute_import, division, print_function)
 import datetime
+import json
 import random
 import string
 import subprocess
 import requests
+from kafka import KafkaProducer
 from requests.exceptions import Timeout
 from mantid.simpleapi import *
 from ISISCommandInterface import *
 
 
 def main(input_data):
+    kafka_broker = input_data['kafka']['host'] + ":" + input_data['kafka']['port']
     catamel = Catamel(input_data)
+    producer = KafkaProducer(bootstrap_servers=kafka_broker, value_serializer=lambda v: json.dumps(v).encode('utf-8'))
     sans2d = SANS2DLimitEventsTime(input_data)
     utils = Utils()
 
@@ -30,9 +34,13 @@ def main(input_data):
         derived_dataset = utils.new_derived_dataset(input_dataset, reduce_data)
         post_response = catamel.post_derived_dataset(access_token, derived_dataset)
         message = "Success: Dataset reduction complete."
-        return {"inputDataset": dataset_pid, "derivedDataset": post_response, "message": message}
+        kafka_value = {"inputDataset": dataset_pid, "derivedDataset": post_response, "message": message}
+        future = producer.send(topic=input_data['kafka']['topic'], value=kafka_value)
+        return future.get(timeout=60)
     else:
-        return {"inputDataset": dataset_pid, "derivedDataset": "N/A", "message": access_token}
+        kafka_value = {"inputDataset": dataset_pid, "derivedDataset": "N/A", "message": access_token}
+        future = producer.send(topic=input_data['kafka']['topic'], value=kafka_value)
+        return future.get(timeout=60)
 
 
 class SANS2DLimitEventsTime(object):

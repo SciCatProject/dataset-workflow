@@ -3,8 +3,13 @@
     "host": "Your IP address, NOT LOCALHOST",
     "port": "Catamel api port"
   },
+  "kafka": {
+    "host": "Your IP address, NOT LOCALHOST",
+    "port": "Kafka broker port",
+    "topic": "Topic to produce to"
+  },
   "login": {
     "username": "SciCat username",
-    "password": "ScicCat password"
+    "password": "SciCat password"
   }
 }
