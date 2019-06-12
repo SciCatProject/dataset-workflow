@@ -5,6 +5,7 @@ import random
 import string
 import subprocess
 import requests
+import urllib
 from kafka import KafkaProducer
 from requests.exceptions import Timeout
 from mantid.simpleapi import *
@@ -18,18 +19,24 @@ def main(input_data):
     sans2d = SANS2DLimitEventsTime(input_data)
     utils = Utils()
 
-    if 'datasetPid' in input_data:
-        dataset_pid = input_data['datasetPid']
-    elif 'messages' in input_data and 'datasetPid' in input_data['messages'][0]['value']:
+    if 'messages' in input_data and 'datasetPid' in input_data['messages'][0]['value']:
         dataset_pid = input_data['messages'][0]['value']['datasetPid']
     else:
         message = "Error: Input did not reach Action 'mantid-reduce-dataset'."
-        return {"inputDataset": input_data, "derivedDataset": "N/A", "message": message}
+        kafka_value = {"inputDataset": input_data, "derivedDataset": "N/A", "message": message}
+        future = producer.send(topic=input_data['kafka']['topic'], value=kafka_value)
+        return future.get(timeout=60)
 
     access_token = catamel.login()
 
     if len(access_token) == 64:
         input_dataset = catamel.fetch_dataset_from_pid(access_token, dataset_pid)
+        existing_derived_datasets = catamel.fetch_derived_datasets(access_token, dataset_pid)
+        if len(existing_derived_datasets) > 0:
+            delete_count = 0
+            for dataset in existing_derived_datasets:
+                delete_count += catamel.delete_derived_dataset(access_token, dataset['pid'])
+            assert delete_count == len(existing_derived_datasets)
         reduce_data = sans2d.run()
         derived_dataset = utils.new_derived_dataset(input_dataset, reduce_data)
         post_response = catamel.post_derived_dataset(access_token, derived_dataset)
@@ -74,6 +81,30 @@ class Catamel:
         else:
             return login_response.json()['id']
 
+    def fetch_derived_datasets(self, access_token, dataset_pid):
+        request_filter = urllib.quote_plus(json.dumps({"where": {"inputDatasets": dataset_pid}}))
+        try:
+            fetch_response = requests.get(
+                ('http://' + self.host + ':' + self.port + '/api/v3/DerivedDatasets?filter=' + request_filter +
+                 '&access_token=' + access_token),
+                timeout=(5, 10))
+        except Timeout:
+            return "Error: Get request timed out"
+        else:
+            return fetch_response.json()
+
+    def delete_derived_dataset(self, access_token, derived_dataset_pid):
+        formatted_pid = derived_dataset_pid.replace("/", "%2F")
+        try:
+            delete_response = requests.delete(
+                ('http://' + self.host + ':' + self.port + '/api/v3/DerivedDatasets/' + formatted_pid +
+                 '?access_token=' + access_token),
+                timeout=(5, 10))
+        except Timeout:
+            return "Error: Delete request timed out"
+        else:
+            return delete_response.json()['count']
+
     def post_derived_dataset(self, access_token, derived_dataset):
         try:
             post_response = requests.post(
@@ -90,7 +121,8 @@ class Catamel:
         formatted_pid = dataset_pid.replace("/", "%2F")
         try:
             fetch_response = requests.get(
-                'http://' + self.host + ':' + self.port + '/api/v3/Datasets/' + formatted_pid + '?access_token=' + access_token,
+                ('http://' + self.host + ':' + self.port + '/api/v3/Datasets/' + formatted_pid +
+                 '?access_token=' + access_token),
                 timeout=(5, 10)
             )
         except Timeout:
