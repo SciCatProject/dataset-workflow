@@ -42,6 +42,8 @@ def main(input_data):
         post_response = catamel.post_derived_dataset(access_token, derived_dataset)
         message = "Success: Dataset reduction complete."
         kafka_value = {"inputDataset": dataset_pid, "derivedDataset": post_response, "message": message}
+        dataset_history_id = catamel.update_dataset_history(access_token, dataset_pid, kafka_value)
+        print(dataset_history_id)
         future = producer.send(topic=input_data['kafka']['topic'], value=kafka_value)
         return future.get(timeout=60)
     else:
@@ -129,6 +131,19 @@ class Catamel:
             return "Error: Get request timed out."
         else:
             return fetch_response.json()
+
+    def update_dataset_history(self, access_token, dataset_pid, reduce_result):
+        formatted_pid = dataset_pid.replace("/", "%2F")
+        try:
+            update_history_response = requests.post(
+                ('http://' + self.host + ':' + self.port + '/api/v3/Datasets/' + formatted_pid +
+                 '/historyList?access_token=' + access_token),
+                json=reduce_result,
+                timeout=(5, 10))
+        except Timeout:
+            return "Error: Update dataset history failed"
+        else:
+            return update_history_response.json()['id']
 
 
 class Utils:
